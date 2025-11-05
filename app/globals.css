@@ -4,12 +4,40 @@
   :root {
     --background: #ffffff;
     --foreground: #171717;
+
+    /* Primary colors */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+
+    /* Status colors */
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+
+    /* Neutral colors */
+    --border: #e5e7eb;
+    --card: #f9fafb;
+    --muted: #6b7280;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --background: #0a0a0a;
       --foreground: #ededed;
+
+      /* Primary colors */
+      --primary: #60a5fa;
+      --primary-hover: #3b82f6;
+
+      /* Status colors */
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #f87171;
+
+      /* Neutral colors */
+      --border: #374151;
+      --card: #1f2937;
+      --muted: #9ca3af;
     }
   }
 
