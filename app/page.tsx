@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, ListTodo } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { TaskItem } from "@/components/TaskItem";
+import { TaskStats } from "@/components/TaskStats";
 
 type Task = {
   id: string;
@@ -49,87 +55,83 @@ export default function Home() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const completedTasks = tasks.filter(task => task.completed).length;
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="bg-white w-full max-w-md mx-auto p-4 rounded-xl shadow">
-        <h1 className="text-2xl font-bold mb-4">Task Tracker</h1>
-
-        {/* add task */}
-        <form
-          className="flex gap-2 mb-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const title = newTask.trim();
-            if (!title) return;
-            addTask(title);
-            setNewTask("");
-          }}
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+      <div className="max-w-md mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
         >
-          <input
-            className="border border-slate-200 rounded-lg flex-1 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-            placeholder="Add a task..."
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-2xl mb-4">
+            <ListTodo className="w-8 h-8 text-blue-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Task Tracker</h1>
+          <p className="text-gray-600 text-sm">Stay organized and productive</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-2xl shadow-xl p-6 backdrop-blur-sm"
+        >
+          <form
+            className="flex gap-2 mb-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const title = newTask.trim();
+              if (!title) return;
+              addTask(title);
+              setNewTask("");
+            }}
           >
-            Add
-          </button>
-        </form>
+            <Input
+              placeholder="What needs to be done?"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" className="px-4">
+              <Plus size={16} />
+            </Button>
+          </form>
 
-        {/* header row */}
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-xs text-slate-500">
-            {tasks.length} task{tasks.length === 1 ? "" : "s"}
-          </p>
-          {tasks.length > 0 && (
-            <button
-              onClick={() => setTasks([])}
-              className="text-xs text-slate-400 hover:text-slate-600"
-            >
-              Clear all
-            </button>
-          )}
-        </div>
+          <TaskStats
+            totalTasks={tasks.length}
+            completedTasks={completedTasks}
+            onClearAll={() => setTasks([])}
+          />
 
-        {/* list */}
-        <ul className="space-y-2">
-          {tasks.length === 0 && (
-            <p className="text-sm text-slate-400">No tasks yet. Add one 👆</p>
-          )}
-          {tasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center justify-between border border-slate-100 bg-slate-50 rounded-lg px-3 py-2"
-            >
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTask(task.id)}
-                  className="h-4 w-4"
-                />
-                <span
-                  className={
-                    task.completed
-                      ? "line-through text-slate-400 text-sm"
-                      : "text-sm"
-                  }
+          <div className="space-y-2">
+            <AnimatePresence mode="popLayout">
+              {tasks.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
                 >
-                  {task.title}
-                </span>
-              </div>
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="text-xs text-red-500 hover:text-red-600"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ListTodo className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm">No tasks yet</p>
+                  <p className="text-gray-400 text-xs mt-1">Add your first task above ↑</p>
+                </motion.div>
+              ) : (
+                tasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onToggle={toggleTask}
+                    onDelete={deleteTask}
+                  />
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     </main>
   );
